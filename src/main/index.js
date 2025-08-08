@@ -80,6 +80,10 @@ function createWindow() {
 
   mainWindow.on('ready-to-show', () => {
     mainWindow.show()
+    // Открывать DevTools только в dev-режиме
+    if (is.dev && process.env['ELECTRON_RENDERER_URL']) {
+      mainWindow.webContents.openDevTools({ mode: 'detach' })
+    }
   })
 
   mainWindow.webContents.setWindowOpenHandler(details => {

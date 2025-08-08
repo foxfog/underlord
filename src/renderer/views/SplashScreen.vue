@@ -1,6 +1,9 @@
 <template>
 	<div class="splash-screen">
-		<p>Велком</p>
+		<div class="title _poscen">
+			<div class="_name">Underlord</div>
+			<div class="_version">0.1</div>
+		</div>
 	</div>
 </template>
 
@@ -13,17 +16,33 @@
 	const store = useSettingsStore()
 	const splashMusic = 'audio/music/Bloodhound Gang - The Bad Touch.mp3' // путь к музыке для сплешскрина
 
+	function goHome() {
+		window.removeEventListener('click', onClick)
+		window.removeEventListener('keydown', onKeyDown)
+		router.replace('/home')
+	}
+
+	function onClick() {
+		goHome()
+	}
+
+	function onKeyDown(e) {
+		if (e.code === 'Space' || e.key === ' ' || e.code === 'Enter' || e.key === 'Enter') {
+			goHome()
+		}
+		// иначе не повторяем слушатель, чтобы не было двойного перехода
+	}
+
 	onMounted(() => {
 		// Сменить трек на сплешевый
 		store.setMusicFile(splashMusic)
 
-		setTimeout(() => {
+		/*setTimeout(() => {
 			router.replace('/home')
-		}, 6000)
+		}, 6000)*/
 
-		window.addEventListener('click', () => {
-			router.replace('/home')
-		}, { once: true })
+		window.addEventListener('click', onClick, { once: true })
+		window.addEventListener('keydown', onKeyDown, { once: true })
 	})
 
 	onBeforeUnmount(() => {
@@ -36,15 +55,23 @@
 </script>
 
 <style scoped>
-.splash-screen {
-	position: absolute;
-	inset: 0;
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	flex-direction: column;
-	background: black;
-	color: white;
-	font-size: 2rem;
-}
+	.splash-screen {
+		position: absolute;
+		inset: 0;
+		background: var(--color-black);
+		color: var(--color-white);
+		.title {
+			display: flex;
+			flex-direction: column;
+			font-size: calc(4 * var(--size));
+			font-family: Overlord;
+			._name {
+				
+			}
+			._version {
+				text-align: right;
+				font-size: 0.5em;
+			}
+		}
+	}
 </style>

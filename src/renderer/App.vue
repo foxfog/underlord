@@ -5,12 +5,6 @@
 	<BgMusic />
 </template>
 
-<script>
+<script setup>
 	import BgMusic from '@/components/sounds/BgMusic.vue'
-
-	export default {
-		components: {
-			BgMusic
-		}
-	}
 </script>
