@@ -2,7 +2,7 @@
 	<div class="splash-screen">
 		<div class="title _poscen">
 			<div class="_name">Underlord</div>
-			<div class="_version">0.1</div>
+			<div class="_version">0.1.0</div>
 		</div>
 	</div>
 </template>
