@@ -1,8 +1,15 @@
 <template>
 	<div class="splash-screen">
-		<div class="title _poscen">
-			<div class="_name">Underlord</div>
-			<div class="_version">0.1.0</div>
+		<div class="section section-1">
+			<div class="title fp-poscen">
+				<div class="_name"></div>
+			</div>
+		</div>
+		<div class="section section-2">
+			<div class="title fp-poscen">
+				<div class="_name">Повелитель ЛИ Underlord</div>
+				<div class="_version">0.1</div>
+			</div>
 		</div>
 	</div>
 </template>
@@ -41,7 +48,7 @@
 			router.replace('/home')
 		}, 6000)*/
 
-		window.addEventListener('click', onClick, { once: true })
+		//window.addEventListener('click', onClick, { once: true })
 		window.addEventListener('keydown', onKeyDown, { once: true })
 	})
 
@@ -71,6 +78,7 @@
 			._version {
 				text-align: right;
 				font-size: 0.5em;
+				margin-top: -1em;
 			}
 		}
 	}
