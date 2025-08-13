@@ -10,6 +10,7 @@ const api = {
     setFullscreen: (flag) => ipcRenderer.send('set-fullscreen', flag),
     saveSettings: (data) => ipcRenderer.send('save-settings', data),
     listFiles: (folderPath) => ipcRenderer.invoke('list-files', folderPath),
+    setResolution: (res) => ipcRenderer.send('set-resolution', res),
     ...electronAPI
 }
 

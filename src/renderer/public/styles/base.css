@@ -2,10 +2,14 @@
 	--layout-width: 1920;
     --layout-height: 1080;
 
-	--size: min(
+	--size-coef: calc(4 * 800 / var(--layout-width));
+
+	--size-pred: min(
         calc(100dvw / var(--layout-width) * (var(--layout-width) / 100)),
         calc(100dvh / var(--layout-height) * (var(--layout-width) / 100))
     );
+
+	--size: calc(var(--size-coef) * var(--size-pred));
 }
 
 body {

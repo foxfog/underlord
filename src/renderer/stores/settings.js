@@ -14,10 +14,10 @@ export function initSettingsStore(settings) {
 
 			audio: {
 				...(settings?.audio ?? {}),
-				commonVolume: settings?.audio?.commonVolume ?? 97,
-				musicVolume: settings?.audio?.musicVolume ?? 100,
-				soundVolume: settings?.audio?.soundVolume ?? 100,
-				voiceVolume: settings?.audio?.voiceVolume ?? 100,
+				commonVolume: settings?.audio?.commonVolume ?? 80,
+				musicVolume: settings?.audio?.musicVolume ?? 80,
+				soundVolume: settings?.audio?.soundVolume ?? 80,
+				voiceVolume: settings?.audio?.voiceVolume ?? 80,
 			},
 
 			controls: {
@@ -28,12 +28,12 @@ export function initSettingsStore(settings) {
 			general: {
 				...(settings?.general ?? {}),
 				language: settings?.general?.language ?? 'ru',
-				langs: settings?.general?.langs ?? ['ru', 'en'],
 			},
 
 			video: {
 				...(settings?.video ?? {}),
 				fullscreen: settings?.video?.fullscreen ?? false,
+				resolution: settings?.video?.resolution ?? '1920x1080',
 			},
 		}),
 
@@ -71,6 +71,10 @@ export function initSettingsStore(settings) {
 
 			setKeyboardLayout(layout) {
 				this.controls.keyboardLayout = layout
+			},
+
+			setResolution(res) {
+				this.video.resolution = res
 			},
 		}
 	})

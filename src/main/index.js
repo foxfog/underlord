@@ -4,6 +4,7 @@ import { app, shell, BrowserWindow, ipcMain } from 'electron'
 import { join } from 'path'
 import fs from 'fs/promises'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
+import { parse } from 'path'
 
 
 // Проверка и создание settings.json
@@ -65,10 +66,39 @@ ipcMain.handle('list-files', async (_event, folderPath) => {
   }
 })
 
-function createWindow() {
+ipcMain.on('set-resolution', (event, resolution) => {
+  const win = BrowserWindow.fromWebContents(event.sender)
+  if (win) {
+    // Не менять размер, если fullscreen
+    if (!win.isFullScreen()) {
+      const [w, h] = resolution.split('x').map(Number)
+      if (w && h) win.setSize(w, h)
+    }
+  }
+})
+
+async function getInitialSettings() {
+  const file = join(app.getPath('userData'), 'settings.json')
+  const text = await fs.readFile(file, 'utf-8')
+  return JSON.parse(text)
+}
+
+async function createWindow() {
+  const settings = await getInitialSettings()
+  let width = 900, height = 670
+  if (settings?.video?.resolution) {
+    const [w, h] = String(settings.video.resolution).split('x').map(Number)
+    if (w && h) {
+      width = w
+      height = h
+    }
+  }
+  const fullscreen = !!settings?.video?.fullscreen
+
   const mainWindow = new BrowserWindow({
-    width: 900,
-    height: 670,
+    width,
+    height,
+    fullscreen,
     show: false,
     autoHideMenuBar: true,
     ...(process.platform === 'linux' ? { icon } : {}),

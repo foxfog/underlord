@@ -54,7 +54,7 @@
 
 
 
-<style scoped>
+<style>
 	.mainmenu {
 		a {
 			font-size: calc(4* var(--size));

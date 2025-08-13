@@ -9,10 +9,10 @@
     "keyboardLayout": "qwerty"
   },
   "general": {
-    "langs": ["ru", "en"],
     "language": "ru"
   },
   "video": {
-    "fullscreen": false
+    "fullscreen": false,
+    "resolution": "1920x1080"
   }
 }
