@@ -129,6 +129,14 @@ async function createWindow() {
       mainWindow.webContents.openDevTools({ mode: 'detach' })
       event.preventDefault()
     }
+    // Добавить поддержку F5 и Ctrl+R для dev-режима
+    if (is.dev && (
+      (input.key === 'F5' && input.type === 'keyDown') ||
+      (input.control && input.key.toLowerCase() === 'r' && input.type === 'keyDown')
+    )) {
+      mainWindow.reload()
+      event.preventDefault()
+    }
   })
 
   if (is.dev && process.env['ELECTRON_RENDERER_URL']) {

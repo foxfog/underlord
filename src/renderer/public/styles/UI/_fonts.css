@@ -2,3 +2,8 @@
 	font-family: Overlord;
 	src: url('../../fonts/Overlord.woff');
 }
+
+@font-face {
+	font-family: Kurale;
+	src: url('../../fonts/Kurale.ttf');
+}

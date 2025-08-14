@@ -5,11 +5,11 @@
                 v-for="route in filteredRouters"
                 :to="route.path"
                 :key="route.name"
-                class="mainmenu-link"
+                class="nav-link"
             >
                 {{ translateRouteName(`mainmenu.${route.name}`) }}
             </router-link>
-            <a class="mainmenu-link" @click="handleButtonClick">
+            <a class="nav-link" @click="handleButtonClick">
                 {{ t('mainmenu.close') }}
             </a>
         </nav>
@@ -51,14 +51,4 @@
 		routers.filter(r => !(r.name === 'home' && route.path === '/'))
 	)
 </script>
-
-
-
-<style>
-	.mainmenu {
-		a {
-			font-size: calc(4* var(--size));
-		}
-	}
-</style>
   

@@ -1,5 +1,12 @@
 <template>
-	<MainMenu />
+	<div class="page-area __dark">
+		<div class="content-area">
+			<div class="page-title">Главная</div>
+		</div>
+		<div class="menu-area __static">
+			<MainMenu />
+		</div>
+	</div>
 </template>
 
 <script setup>

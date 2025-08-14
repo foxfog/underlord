@@ -1,0 +1,21 @@
+.menu-area {
+	z-index: 2;
+	flex: none;
+	display: flex;
+	flex-direction: column;
+	&.__static {
+		position: relative;
+	}
+	.mainmenu {
+		margin-top: auto;
+		.nav {
+			display: flex;
+			flex-direction: column;
+			.nav-link {
+				font-size: calc(2 * var(--size));
+				width: 100%;
+				text-align: right;
+			}
+		}
+	}
+}
