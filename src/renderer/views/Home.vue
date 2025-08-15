@@ -6,6 +6,9 @@
 		<div class="menu-area __static">
 			<MainMenu />
 		</div>
+		<div class="back-area">
+			<img src="/images/wallpaper/0.webp" />
+		</div>
 	</div>
 </template>
 

@@ -32,7 +32,7 @@
 	const route = useRoute()
 	const { t } = useI18n()
 
-	const routeNames = ['home', 'settings', 'test']
+	const routeNames = ['home', 'splash', 'settings', 'test']
 	const routers = routeNames
 		.map(name => router.options.routes.find(r => r.name === name))
 		.filter(Boolean)
