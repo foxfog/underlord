@@ -1,3 +1,5 @@
+<!-- src/renderer/views/Settings.vue -->
+
 <template>
 	<div class="page-area __dark">
 		<div class="content-area">
@@ -30,18 +32,22 @@
 					<div class="option">
 						<label>Общая громкость: {{ store.audio.commonVolume }}%</label>
 						<input type="range" min="0" max="100" v-model.number="store.audio.commonVolume" />
+						<UiPlayerAudio :src="testAudio.music" volumeType="common" />
 					</div>
 					<div class="option">
 						<label>Музыка: {{ store.audio.musicVolume }}%</label>
 						<input type="range" min="0" max="100" v-model.number="store.audio.musicVolume" />
+						<UiPlayerAudio :src="testAudio.music" volumeType="music" />
 					</div>
 					<div class="option">
 						<label>Звуки: {{ store.audio.soundVolume }}%</label>
 						<input type="range" min="0" max="100" v-model.number="store.audio.soundVolume" />
+						<UiPlayerAudio :src="testAudio.sound" volumeType="sound" />
 					</div>
 					<div class="option">
 						<label>Голос: {{ store.audio.voiceVolume }}%</label>
 						<input type="range" min="0" max="100" v-model.number="store.audio.voiceVolume" />
+						<UiPlayerAudio :src="testAudio.voice" volumeType="voice" />
 					</div>
 				</section>
 
@@ -96,12 +102,13 @@
 </template>
 
 <script setup>
-	import { ref, computed } from 'vue'
-	import MainMenu from '@/components/MainMenu.vue'
-	import { useSettingsStore } from '@/stores/settings'
+import { ref, computed } from 'vue'
+import MainMenu from '@/components/MainMenu.vue'
+import { useSettingsStore } from '@/stores/settings'
+import UiPlayerAudio from '@/components/UI/UiPlayerAudio.vue'
 
-	const store = useSettingsStore()
-	const activeSection = ref('audio')
+const store = useSettingsStore()
+const activeSection = ref('audio')
 
 	// Варианты разрешений и языков
 	const availableResolutions = [
@@ -161,6 +168,12 @@
 		onFullscreenModeChange()
 	}
 
+	// Пути к тестовым аудиофайлам для каждой категории
+	const testAudio = {
+		music: '../public/audio/test/voice/tuturu_1.mp3',
+		sound: '../public/audio/test/voice/tuturu_1.mp3',
+		voice: '../public/audio/test/voice/tuturu_1.mp3'
+	}
 </script>
 
 <style scoped>

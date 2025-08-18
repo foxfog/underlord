@@ -6,6 +6,7 @@ import App from './App.vue'
 import i18n from './locales'
 import router from './router'
 import { initSettingsStore } from './stores/settings'
+import uiCompontents from './components/UI'
 
 
 async function main() {
@@ -17,6 +18,10 @@ async function main() {
 	}
 	const app = createApp(App)
 	const pinia = createPinia()
+
+	uiCompontents.forEach(uiComponent => {
+		app.component(uiComponent.name, uiComponent)
+	})
 
 	app.config.globalProperties.$t = i18n.global.t
 
