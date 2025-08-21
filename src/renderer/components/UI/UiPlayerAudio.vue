@@ -1,83 +1,177 @@
 <template>
-	<div class="ui-player-audio">
-		<div class="audio-info">
-			<span class="audio-title">{{ currentTrackName }}</span>
-			<span v-if="isPlaying" class="audio-status">▶</span>
-			<span v-else class="audio-status">⏸</span>
-		</div>
-		<div class="audio-controls">
-			<button @click="toggleMusic">
-				{{ isPlaying ? 'Пауза' : 'Воспроизвести' }}
+	<div class="ui-audioplayer">
+		<div class="ui-audioplayer-body">
+			<button class="ui-audioplayer-playbtn" @click="togglePlay">
+				<template v-if="isPlaying">⏸</template>
+				<template v-else>▶</template>
 			</button>
-			<input
-				type="range"
-				min="0"
-				max="100"
-				v-model.number="store.audio.musicVolume"
-				:title="'Громкость музыки: ' + store.audio.musicVolume + '%'"
-			/>
-			<span>{{ store.audio.musicVolume }}%</span>
+
+			<div v-if="audioLook === 1" class="ui-audioplayer-left">
+				<div class="ui-audioplayer-top">
+					<div class="ui-audioplayer-timeline">
+						<input
+							type="range"
+							class="ui-range"
+							:max="audioDuration"
+							v-model="currentTime"
+							@input="seekToTime"
+						/>
+					</div>
+				</div>
+				<div class="ui-audioplayer-bot">
+					<div class="ui-audioplayer-time">
+						<div>{{ formattedTime }}</div>/<div>{{ formattedEndTime }}</div>
+					</div>
+					<div class="ui-audioplayer-volume">
+						<input
+							type="range"
+							class="ui-range"
+							:max="1"
+							step="0.01"
+							v-model="volume"
+							@input="changeVolume"
+						/>
+					</div>
+				</div>
+			</div>
 		</div>
-		<button @click="playTest" :disabled="!src">
-			▶️ Тест
-		</button>
-		<span v-if="isPlaying" class="audio-status">Воспроизведение...</span>
+
+		<audio
+			ref="audioPlayer"
+			:src="src"
+			:autoplay="autoplay"
+			@ended="handleAudioEnded"
+			@timeupdate="handleTimeUpdate"
+			@volumechange="handleVolumeChange"
+		></audio>
 	</div>
 </template>
 
 <script setup>
-	import { computed, ref, watch } from 'vue'
-	import { useSettingsStore } from '@/stores/settings'
+import { ref, computed, onMounted, watch } from 'vue'
+import { useSettingsStore } from '@/stores/settings'
 
-	const props = defineProps({
-		src: String,
-		volumeType: {
-			type: String,
-			default: 'music' // music, sound, voice, common
-		}
-	})
+const props = defineProps({
+	src: { type: String, default: '' },
+	volumeType: { type: String, default: 'music' }, // common, music, sound, voice
+	autoplay: { type: Boolean, default: false },
+	audioLook: { type: Number, default: 1 }
+})
 
-	const store = useSettingsStore()
-	const audio = ref(null)
-	const isPlaying = ref(false)
+const store = useSettingsStore()
+const audioPlayer = ref(null)
 
-	const volume = computed(() => {
+const isPlaying = ref(false)
+const currentTime = ref(0)
+const audioDuration = ref(0)
+const durationObtained = ref(false)
+const volume = ref(1)
+
+/**
+ * Привязка громкости к store по типу
+ */
+const currentVolume = computed({
+	get() {
 		switch (props.volumeType) {
-			case 'common': return (store.audio.commonVolume ?? 100) / 100
-			case 'music':  return (store.audio.musicVolume ?? 100) / 100
-			case 'sound':  return (store.audio.soundVolume ?? 100) / 100
-			case 'voice':  return (store.audio.voiceVolume ?? 100) / 100
+			case 'common': return store.audio.commonVolume / 100
+			case 'music':  return store.audio.musicVolume / 100
+			case 'sound':  return store.audio.soundVolume / 100
+			case 'voice':  return store.audio.voiceVolume / 100
 			default:       return 1
 		}
-	})
-
-	function toggleMusic() {
-		store.toggleMusic()
-	}
-
-	const currentTrackName = computed(() => {
-		// Показываем только имя файла без пути и расширения
-		const file = store.currentMusicFile || ''
-		return file.split('/').pop()?.replace(/\.[^/.]+$/, '') || '—'
-	})
-
-	function playTest() {
-		if (!props.src) return
-		if (audio.value) {
-			audio.value.pause()
-			audio.value.currentTime = 0
+	},
+	set(val) {
+		const percent = Math.round(val * 100)
+		switch (props.volumeType) {
+			case 'common': store.audio.commonVolume = percent; break
+			case 'music':  store.audio.musicVolume = percent; break
+			case 'sound':  store.audio.soundVolume = percent; break
+			case 'voice':  store.audio.voiceVolume = percent; break
 		}
-		audio.value = new Audio(props.src)
-		audio.value.volume = volume.value
-		isPlaying.value = true
-		audio.value.onended = () => { isPlaying.value = false }
-		audio.value.onerror = () => { isPlaying.value = false }
-		audio.value.play()
 	}
+})
 
-	watch(volume, (v) => {
-		if (audio.value) audio.value.volume = v
+/**
+ * Форматированное время
+ */
+const formattedTime = computed(() => {
+	const minutes = Math.floor(currentTime.value / 60)
+	const seconds = Math.floor(currentTime.value % 60)
+	return `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`
+})
+
+const formattedEndTime = computed(() => {
+	const endMinutes = Math.floor(audioDuration.value / 60)
+	const endSeconds = Math.floor(audioDuration.value % 60)
+	return `${endMinutes}:${endSeconds < 10 ? '0' : ''}${endSeconds}`
+})
+
+/**
+ * Управление плеером
+ */
+function togglePlay() {
+	if (!audioPlayer.value) return
+	if (isPlaying.value) {
+		audioPlayer.value.pause()
+	} else {
+		audioPlayer.value.play()
+	}
+	isPlaying.value = !isPlaying.value
+}
+
+function handleAudioEnded() {
+	isPlaying.value = false
+}
+
+function handleTimeUpdate() {
+	if (audioPlayer.value) {
+		currentTime.value = audioPlayer.value.currentTime
+	}
+}
+
+function seekToTime() {
+	if (audioPlayer.value) {
+		audioPlayer.value.currentTime = currentTime.value
+	}
+}
+
+function changeVolume() {
+	if (audioPlayer.value) {
+		audioPlayer.value.volume = volume.value
+	}
+}
+
+function handleVolumeChange() {
+	if (audioPlayer.value) {
+		audioPlayer.value.volume = currentVolume.value
+	}
+}
+
+function setInitialVolume() {
+	if (audioPlayer.value) {
+		audioPlayer.value.volume = currentVolume.value
+	}
+}
+
+/**
+ * Хук монтирования
+ */
+onMounted(() => {
+	if (!audioPlayer.value) return
+
+	audioPlayer.value.addEventListener('durationchange', () => {
+		if (!durationObtained.value) {
+			audioDuration.value = audioPlayer.value.duration
+			durationObtained.value = true
+		}
 	})
+
+	setInitialVolume()
+
+	watch(currentVolume, () => {
+		handleVolumeChange()
+	})
+})
 </script>
 
 <style scoped>
