@@ -55,7 +55,8 @@ const props = defineProps({
 	src: { type: String, default: '' },
 	volumeType: { type: String, default: 'music' }, // common, music, sound, voice
 	autoplay: { type: Boolean, default: false },
-	audioLook: { type: Number, default: 1 }
+	audioLook: { type: Number, default: 1 },
+	resetOnStop: { type: Boolean, default: false } // Reset timer to beginning when stopping
 })
 
 const store = useSettingsStore()
@@ -113,14 +114,30 @@ function togglePlay() {
 	if (!audioPlayer.value) return
 	if (isPlaying.value) {
 		audioPlayer.value.pause()
+		// Reset timer to beginning if resetOnStop prop is true
+		if (props.resetOnStop) {
+			audioPlayer.value.currentTime = 0
+			currentTime.value = 0
+		}
+		// Notify that test audio stopped
+		store.setTestAudioPlaying(false)
 	} else {
 		audioPlayer.value.play()
+		// Notify that test audio started
+		store.setTestAudioPlaying(true)
 	}
 	isPlaying.value = !isPlaying.value
 }
 
 function handleAudioEnded() {
 	isPlaying.value = false
+	// Reset timer to beginning if resetOnStop prop is true
+	if (props.resetOnStop && audioPlayer.value) {
+		audioPlayer.value.currentTime = 0
+		currentTime.value = 0
+	}
+	// Notify that test audio stopped
+	store.setTestAudioPlaying(false)
 }
 
 function handleTimeUpdate() {

@@ -11,6 +11,7 @@ export function initSettingsStore(settings) {
 			isMusicPlaying: true,
 			defaultMusicFile: 'audio/music/Called_Upon.ogg',
 			currentMusicFile: 'audio/music/Called_Upon.ogg',
+			isTestAudioPlaying: false,
 
 			audio: {
 				...(settings?.audio ?? {}),
@@ -75,6 +76,11 @@ export function initSettingsStore(settings) {
 
 			setResolution(res) {
 				this.video.resolution = res
+			},
+
+			// Test audio control actions
+			setTestAudioPlaying(isPlaying) {
+				this.isTestAudioPlaying = isPlaying
 			},
 		}
 	})

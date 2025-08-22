@@ -4,14 +4,42 @@
 	<div class="page-area __dark">
 		<div class="content-area">
 			<div class="settings-panel">
-				<div class="tabs">
-					<button :class="{ active: activeSection === 'audio' }" @click="activeSection = 'audio'">Audio</button>
-					<button :class="{ active: activeSection === 'general' }" @click="activeSection = 'general'">General</button>
-					<button :class="{ active: activeSection === 'video' }" @click="activeSection = 'video'">Video</button>
+				<div class="ui-tabs">
+					<div class="ui-tabs-header">
+						<button 
+							class="ui-tabs-label" 
+							:class="{ '__active': activeSection === 'audio' }" 
+							@click="activeSection = 'audio'"
+						>
+							Audio
+						</button>
+						<button 
+							class="ui-tabs-label" 
+							:class="{ '__active': activeSection === 'general' }" 
+							@click="activeSection = 'general'"
+						>
+							General
+						</button>
+						<button 
+							class="ui-tabs-label" 
+							:class="{ '__active': activeSection === 'video' }" 
+							@click="activeSection = 'video'"
+						>
+							Video
+						</button>
+					</div>
+					<div class="ui-tabs-content">
+						<div class="ui-tab" :class="{ '__active': activeSection === 'audio' }">
+							<SettingsAudio />
+						</div>
+						<div class="ui-tab" :class="{ '__active': activeSection === 'general' }">
+							<SettingsGeneral />
+						</div>
+						<div class="ui-tab" :class="{ '__active': activeSection === 'video' }">
+							<SettingsVideo />
+						</div>
+					</div>
 				</div>
-				<SettingsAudio v-show="activeSection === 'audio'" />
-				<SettingsGeneral v-show="activeSection === 'general'" />
-				<SettingsVideo v-show="activeSection === 'video'" />
 				<div class="buttons">
 					<button @click="saveSettings">💾 Сохранить</button>
 					<button @click="resetToDefault">🔄 Сбросить по умолчанию</button>
@@ -54,55 +82,3 @@
 		await saveSettings()
 	}
 </script>
-
-<style scoped>
-	.settings-panel {
-		max-width: 600px;
-		margin: 2rem auto;
-		display: flex;
-		flex-direction: column;
-		gap: 1.5rem;
-		height: 100%;
-    	overflow: auto;
-	}
-
-	/* Кнопки переключения секций */
-	.tabs {
-		display: flex;
-		justify-content: center;
-		gap: 0.5rem;
-		margin-bottom: 1rem;
-	}
-	.tabs button {
-		padding: 0.5rem 1rem;
-		border: 1px solid #ccc;
-		border-radius: 6px;
-		background: #f5f5f5;
-		cursor: pointer;
-	}
-	.tabs button.active {
-		background: #007bff;
-		color: white;
-		border-color: #007bff;
-	}
-
-	section {
-		border: 1px solid #ccc;
-		border-radius: 8px;
-		padding: 1rem;
-	}
-
-	.option {
-		display: flex;
-		flex-direction: column;
-		gap: 0.5rem;
-		margin-bottom: 1rem;
-	}
-
-	.buttons {
-		display: flex;
-		gap: 1rem;
-		justify-content: center;
-		margin-top: 1rem;
-	}
-</style>

@@ -13,12 +13,12 @@
 </template>
 
 <script setup>
-import { useSettingsStore } from '@/stores/settings'
+	import { useSettingsStore } from '@/stores/settings'
 
-const store = useSettingsStore()
-const availableLanguages = ['ru', 'en']
+	const store = useSettingsStore()
+	const availableLanguages = ['ru', 'en']
 
-function onLanguageChange() {
-	store.setLanguage(store.general.language)
-}
+	function onLanguageChange() {
+		store.setLanguage(store.general.language)
+	}
 </script>

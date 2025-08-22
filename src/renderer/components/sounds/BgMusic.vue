@@ -18,6 +18,7 @@ const store = useSettingsStore()
 
 const currentMusicFile = computed(() => store.currentMusicFile)
 const isMusicPlaying = computed(() => store.isMusicPlaying)
+const isTestAudioPlaying = computed(() => store.isTestAudioPlaying)
 const musicVolume = computed(() => {
 	const common = store.audio.commonVolume / 100
 	const music = store.audio.musicVolume / 100
@@ -33,8 +34,22 @@ watch(isMusicPlaying, (newValue) => {
 })
 
 watch(musicVolume, (newVolume) => {
-	if (audioPlayer.value) {
+	if (audioPlayer.value && !isTestAudioPlaying.value) {
 		audioPlayer.value.volume = newVolume
+	}
+})
+
+// Handle test audio playback - fade background music
+watch(isTestAudioPlaying, async (isPlaying) => {
+	if (!audioPlayer.value) return
+	if (fadeInOutLock.value) return
+	
+	if (isPlaying) {
+		// Test audio started - fade out background music over 0.5s
+		await fadeOutForTestAudio()
+	} else {
+		// Test audio ended - fade in background music back to normal volume
+		await fadeInAfterTestAudio()
 	}
 })
 
@@ -107,6 +122,64 @@ function pauseMusicWithFadeOut(onlyFade = false) {
 				resolve()
 			}
 		}, 25)
+	})
+}
+
+// Fade out background music for test audio (0.5 seconds)
+function fadeOutForTestAudio() {
+	return new Promise(resolve => {
+		clearInterval(volumeInterval.value)
+		if (!audioPlayer.value) return resolve()
+		
+		const startVolume = audioPlayer.value.volume
+		const fadeSteps = 20 // 20 steps over 0.5 seconds (25ms intervals)
+		const volumeDecrement = startVolume / fadeSteps
+		let currentStep = 0
+		
+		volumeInterval.value = setInterval(() => {
+			currentStep++
+			if (currentStep < fadeSteps && audioPlayer.value.volume > 0.01) {
+				audioPlayer.value.volume = Math.max(startVolume - (volumeDecrement * currentStep), 0)
+			} else {
+				clearInterval(volumeInterval.value)
+				audioPlayer.value.volume = 0
+				// Stop playback during test audio
+				try {
+					audioPlayer.value.pause()
+				} catch {}
+				resolve()
+			}
+		}, 25) // 25ms * 20 steps = 500ms (0.5 seconds)
+	})
+}
+
+// Fade in background music after test audio (0.5 seconds)
+function fadeInAfterTestAudio() {
+	return new Promise(resolve => {
+		clearInterval(volumeInterval.value)
+		if (!audioPlayer.value || !isMusicPlaying.value) return resolve()
+		
+		// Resume playback
+		try {
+			audioPlayer.value.play()
+		} catch {}
+		
+		audioPlayer.value.volume = 0
+		const targetVolume = musicVolume.value
+		const fadeSteps = 20 // 20 steps over 0.5 seconds
+		const volumeIncrement = targetVolume / fadeSteps
+		let currentStep = 0
+		
+		volumeInterval.value = setInterval(() => {
+			currentStep++
+			if (currentStep < fadeSteps && audioPlayer.value.volume < targetVolume) {
+				audioPlayer.value.volume = Math.min(volumeIncrement * currentStep, targetVolume)
+			} else {
+				clearInterval(volumeInterval.value)
+				audioPlayer.value.volume = targetVolume
+				resolve()
+			}
+		}, 25) // 25ms * 20 steps = 500ms (0.5 seconds)
 	})
 }
 </script>

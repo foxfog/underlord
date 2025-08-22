@@ -7,4 +7,6 @@
 
 	--color-base: var(--color-black);
 	--color-back: var(--color-white);
+
+	--color-border: var(--color-base);
 }
