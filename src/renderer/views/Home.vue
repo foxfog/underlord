@@ -7,7 +7,7 @@
 			<MainMenu />
 		</div>
 		<div class="back-area">
-			<img src="/images/wallpaper/0.webp" />
+			<img src="/images/wallpaper/1.jpg" />
 		</div>
 	</div>
 </template>
